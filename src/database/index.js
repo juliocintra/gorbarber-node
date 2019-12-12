@@ -1,10 +1,11 @@
 import Sequelize from 'sequelize';
 
 import User from '../app/models/User';
+import File from '../app/models/File';
 
 import databaseConfig from '../config/database';
 
-const models = [User];
+const models = [User, File];
 
 class Database {
   constructor() {
@@ -16,7 +17,11 @@ class Database {
     this.connection = new Sequelize(databaseConfig);
 
     // Pra cada model é passado para o método `init` a conaxão criada
-    models.map(model => model.init(this.connection));
+    models
+      .map(model => model.init(this.connection))
+      .map(model => model.associate && model.associate(this.connection.models));
+
+    // associate verifica se nas models alguma delas possui relação
   }
 }
 
